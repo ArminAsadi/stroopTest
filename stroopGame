@@ -1,0 +1,89 @@
+# 9/27-29/14. STROOP TEST. By: Armin Asadishad
+# Based on this concept: http://usingpython.com/dl/TTCANTW.py
+# OPTIONAL: 'Print' score on window_create
+# OPTIONAL: 'reset' button on window_create
+# 'Enter' to skip a word if having difficulty...can remove it if user wants
+
+# gui module
+from Tkinter import *
+import random, os, sys
+
+# testing
+colors = ['Red', 'Blue', 'Green', 'Pink', 'Black', 'Yellow', 'Orange',
+          'White', 'Purple', 'Brown']
+score = 0
+time_left = 30
+
+def startGame(event):
+    if time_left == 30:
+        countdown()
+    nextColor()
+
+# Score only goes + and time_left -
+# 30 sec official time to get most pts
+def nextColor():
+    global score
+    global time_left
+
+    # if game currently in play
+    if time_left > 0:
+        e.focus_set() # active text box entry
+    # colors[1] --> when input is color +1 score.
+    # colors[0] --> when input is word +1 score (not what I want)
+    if e.get().lower() == colors[1].lower():
+        score += 1
+    # clear txt entry box
+    e.delete(0, END)
+    # shuffle list of colors
+    random.shuffle(colors)
+    # change color to type, changing txt n' color to random color value
+    label.config(fg=str(colors[1]), text =str(colors[0]))
+    # update score 
+    scoreLabel.config(text = "Score: " + str(score))
+
+def countdown():
+    global time_left
+    if time_left > 0:
+        time_left -= 1
+        # update left label
+        timeLabel.config(text = "Time left: " + str(time_left))
+        # run function again after 1 second
+        timeLabel.after(1000, countdown)
+        restart_program()
+
+# Automatically restarts program
+# destroys active window. Prints score. Restarts program to new window
+def restart_program():
+    if time_left == 0:
+        window_create.destroy()
+        print "Your score: " + str(score)
+        python = sys.executable
+        os.execl(python, python, * sys.argv)
+     
+# create GUI window. Works
+window_create = Tk()
+window_create.title("Text Color")
+window_create.geometry("370x200") # seems small?
+
+# score label
+scoreLabel = Label(window_create, text = "Score: " + str(score), font=('Arial', 12))
+scoreLabel.pack()
+
+# time label
+timeLabel = Label(window_create, text = "Time left: " + str(time_left), font=('Arial', 12))
+timeLabel.pack()
+
+# label for displaying the colors
+label = Label(window_create, font=('Arial', 60))
+label.pack()
+
+# add text entry box for typing in colors
+e = Entry(window_create) # test...
+# run 'startGame' when [Enter] pressed
+window_create.bind('<Return>', startGame)
+e.pack()
+# set focus on entry box
+e.focus_set()
+
+# if don't add this, window doesn't show
+window_create.mainloop()
